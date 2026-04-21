@@ -30,10 +30,10 @@ def cutter():
         cut_video('downloaded/video.mp4', f'clipped/clip{str(clip_num)}.mp4', start, end)
         start += lncut
         clip_num += 1
-        path = os.path.abspath('clipped')
-        if platform.system() == 'Windows':
-            subprocess.Popen(['explorer', path])
-        elif platform.system() == 'Darwin':
-            subprocess.Popen(['open', path])
-        else:
-            subprocess.Popen(['xdg-open', path])
+    path = os.path.abspath('clipped')
+    if platform.system() == 'Windows':
+        subprocess.Popen(['explorer', path])
+    elif platform.system() == 'Darwin':
+        subprocess.Popen(['open', path])
+    else:
+        subprocess.Popen(['xdg-open', path])

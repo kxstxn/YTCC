@@ -5,11 +5,11 @@ import asyncio
 async def main():
     url = input('Enter the link to the original video: ')
     try:
-        await download(url)
+        download(url)
     except Exception:
         print('You probably entered an incorrect link.')
     try:
-        await cutter()
-    except Exception:
-        print('Еrror. Try Again')
+        cutter()
+    except Exception as e:
+        print(f'Еrror. Try Again {e}')
 asyncio.run(main())
