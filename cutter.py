@@ -3,26 +3,33 @@ import os
 import subprocess
 import platform
 
-def cut(url):
-    video = VideoFileClip('downloaded/video.mp4')
-    print('Start create clips')
-    clip_num = 1 #Порядковый номер клипа
-    start = 0 #Начальная точка клипа
+def cut_video(input_file, output_file, start_time, duration):
+    command = [
+        'ffmpeg',
+        '-ss', str(start_time),
+        '-i', input_file,
+        '-t', str(duration),
+        '-c', 'copy',
+        output_file
+    ]
+    subprocess.run(command)
+
+def cutter():
     lncut = int(input('Enter the clip length in seconds: '))
-    end = lncut #Конечная точка клипа
+    video = VideoFileClip('downloaded/video.mp4')
     video_len = int(video.duration)
+    start = 0
+    end = int(lncut)
+    clip_num = 1
     if os.path.isdir('clipped'): #Проверяем существует ли дирректория + создаём если ее нет
         pass
     else:
         os.mkdir('clipped')
-    if lncut < video_len:
-        while start < video_len:
-            end = min(start + lncut, video_len) #Высчитываем конец клипа для некратных значений
-            clip = video.subclipped(start, end)
-            clip.write_videofile(f'clipped/clip{str(clip_num)}.mp4') #Сохраняем каждый клип в заданную дирректорию
-            start += lncut
-            clip_num += 1
-        print('The clips have been successfully generated!')
+    while start < video_len:
+        end = min(start + lncut, video_len)
+        cut_video('downloaded/video.mp4', f'clipped/clip{str(clip_num)}.mp4', start, end)
+        start += lncut
+        clip_num += 1
         path = os.path.abspath('clipped')
         if platform.system() == 'Windows':
             subprocess.Popen(['explorer', path])
@@ -30,9 +37,3 @@ def cut(url):
             subprocess.Popen(['open', path])
         else:
             subprocess.Popen(['xdg-open', path])
-    else:
-        print('The clip is longer than the video')
-
-
-
-

@@ -1,5 +1,5 @@
 from downloader import download
-from cutter import cut
+from cutter import cutter
 import asyncio
 
 async def main():
@@ -9,7 +9,7 @@ async def main():
     except Exception:
         print('You probably entered an incorrect link.')
     try:
-        await cut(url)
+        await cutter()
     except Exception:
         print('Еrror. Try Again')
 asyncio.run(main())
