@@ -1,7 +1,16 @@
+from pytubefix import YouTube
+from pytubefix.cli import on_progress
 from moviepy import VideoFileClip
 import os
 import subprocess
 import platform
+
+def download_and_cut(url):#Загружаем видео с YouTube
+    yt = YouTube(url, on_progress_callback= on_progress)
+    print(f'Downloading "{yt.title}"')
+    yd = yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution()
+    yd.download(f'downloaded', f'{yt.title}.mp4')
+    cutter(yt.title)
 
 def cut_video(input_file, output_file, start_time, duration):
     command = [
@@ -14,9 +23,9 @@ def cut_video(input_file, output_file, start_time, duration):
     ]
     subprocess.run(command)
 
-def cutter():
+def cutter(title):
     lncut = int(input('Enter the clip length in seconds: '))
-    video = VideoFileClip('downloaded/video.mp4')
+    video = VideoFileClip(f'downloaded/{title}.mp4')
     video_len = int(video.duration)
     start = 0
     end = int(lncut)
@@ -25,9 +34,10 @@ def cutter():
         pass
     else:
         os.mkdir('clipped')
+    os.mkdir(f'clipped/{title}')
     while start < video_len:
         end = min(start + lncut, video_len)
-        cut_video('downloaded/video.mp4', f'clipped/clip{str(clip_num)}.mp4', start, end)
+        cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, end)
         start += lncut
         clip_num += 1
     path = os.path.abspath('clipped')
