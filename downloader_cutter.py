@@ -22,7 +22,6 @@ def cut_video(input_file, output_file, start_time, duration):
         output_file
     ]
     subprocess.run(command)
-
 def cutter(title):
     lncut = int(input('Enter the clip length in seconds: '))
     video = VideoFileClip(f'downloaded/{title}.mp4')
@@ -34,15 +33,19 @@ def cutter(title):
         pass
     else:
         os.mkdir('clipped')
-    os.mkdir(f'clipped/{title}')
-    while start < video_len:
-        cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, min(lncut, video_len - start))
-        start += lncut
-        clip_num += 1
-    path = os.path.abspath('clipped')
-    if platform.system() == 'Windows':
-        subprocess.Popen(['explorer', path])
-    elif platform.system() == 'Darwin':
-        subprocess.Popen(['open', path])
+    if os.path.isdir(f'clipped/{title}'):
+        print('The video had already been cut earlier.')
+        pass
     else:
-        subprocess.Popen(['xdg-open', path])
+        os.mkdir(f'clipped/{title}')
+        while start < video_len:
+            cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, min(lncut, video_len - start))
+            start += lncut
+            clip_num += 1
+        path = os.path.abspath('clipped')
+        if platform.system() == 'Windows':
+            subprocess.Popen(['explorer', path])
+        elif platform.system() == 'Darwin':
+            subprocess.Popen(['open', path])
+        else:
+            subprocess.Popen(['xdg-open', path])
