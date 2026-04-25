@@ -4,13 +4,21 @@ from moviepy import VideoFileClip
 import os
 import subprocess
 import platform
+import yt_dlp
 
 def download_and_cut(url):#Загружаем видео с YouTube
-    yt = YouTube(url, on_progress_callback= on_progress)
-    print(f'Downloading "{yt.title}"')
-    yd = yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution()
-    yd.download(f'downloaded', f'{yt.title}.mp4')
-    cutter(yt.title)
+    ydl_opts = {
+        'format': 'bestvideo+bestaudio/best',
+        'outtmpl': f'downloaded/%(title)s.%(ext)s',
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        title = ydl.prepare_filename(info)
+        title_folder = info.get('title')
+
+        ydl.download([url])
+
+    cutter(title, title_folder)
 
 def cut_video(input_file, output_file, start_time, duration):
     command = [
@@ -22,9 +30,9 @@ def cut_video(input_file, output_file, start_time, duration):
         output_file
     ]
     subprocess.run(command)
-def cutter(title):
+def cutter(title, title_folder):
     lncut = int(input('Enter the clip length in seconds: '))
-    video = VideoFileClip(f'downloaded/{title}.mp4')
+    video = VideoFileClip(f'{title}')
     video_len = int(video.duration)
     start = 0
     end = int(lncut)
@@ -33,13 +41,13 @@ def cutter(title):
         pass
     else:
         os.mkdir('clipped')
-    if os.path.isdir(f'clipped/{title}'):
+    if os.path.isdir(f'clipped/{title_folder}'):
         print('The video had already been cut earlier.')
         pass
     else:
-        os.mkdir(f'clipped/{title}')
+        os.mkdir(f'clipped/{title_folder}')
         while start < video_len:
-            cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, min(lncut, video_len - start))
+            cut_video(f'{title}', f'clipped/{title_folder}/{title_folder}_clip{str(clip_num)}.mp4', start, min(lncut, video_len - start))
             start += lncut
             clip_num += 1
         path = os.path.abspath('clipped')
