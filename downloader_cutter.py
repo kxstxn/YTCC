@@ -36,8 +36,7 @@ def cutter(title):
         os.mkdir('clipped')
     os.mkdir(f'clipped/{title}')
     while start < video_len:
-        end = min(start + lncut, video_len)
-        cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, end)
+        cut_video(f'downloaded/{title}.mp4', f'clipped/{title}/{title}_clip{str(clip_num)}.mp4', start, min(lncut, video_len - start))
         start += lncut
         clip_num += 1
     path = os.path.abspath('clipped')
