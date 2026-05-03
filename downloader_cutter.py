@@ -6,7 +6,7 @@ import subprocess
 import platform
 import yt_dlp
 
-def download_and_cut(url):#Загружаем видео с YouTube
+def download_and_cut(url, lncut):#Загружаем видео с YouTube
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',
         'outtmpl': f'downloaded/%(title)s.%(ext)s',
@@ -18,7 +18,7 @@ def download_and_cut(url):#Загружаем видео с YouTube
 
         ydl.download([url])
 
-    cutter(title, title_folder)
+    cutter(title, title_folder, lncut)
 
 def cut_video(input_file, output_file, start_time, duration):
     command = [
@@ -30,8 +30,7 @@ def cut_video(input_file, output_file, start_time, duration):
         output_file
     ]
     subprocess.run(command)
-def cutter(title, title_folder):
-    lncut = int(input('Enter the clip length in seconds: '))
+def cutter(title, title_folder, lncut):
     video = VideoFileClip(f'{title}')
     video_len = int(video.duration)
     start = 0
